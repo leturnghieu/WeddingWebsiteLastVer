@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác nhận tham dự đám cưới</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fef6f9;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 16px;
+            border: 3px solid #f7d0da;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .names {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 26px;
+            margin: 4px 0 12px;
+            color: #ba4861;
+        }
+
+        .names span {
+            margin: 0 4px;
+        }
+
+        .heart {
+            color: red;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #d1435b;
+            margin-bottom: 16px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            /* căn giữa cả nhóm */
+            gap: 20px;
+            /* khoảng cách giữa 2 lựa chọn */
+            margin-bottom: 12px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            /* giảm khoảng cách giữa nút và chữ */
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #b87b9f;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #a16490;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <img src="../ImageTuThem/ANH KHUNG (5).jpg" alt="Ảnh cưới" />
+        <h2>XÁC NHẬN THAM DỰ</h2>
+        <div class="names">
+            Trung Hieu <span class="heart">♥</span> Thuy Chi
+        </div>
+        <p class="note">* Bạn vui lòng xác nhận để chúng mình có thể chuẩn bị đón tiếp chu đáo hơn nhé</p>
+
+        <input type="text" placeholder="Họ và Tên" required />
+        <input type="tel" placeholder="Số điện thoại" required />
+
+        <div class="radio-group">
+            <label><input type="radio" name="thamdu" /> Có, tôi sẽ đến</label>
+            <label><input type="radio" name="thamdu" /> Xin lỗi, tôi bận mất rồi</label>
+        </div>
+
+        <select>
+            <option>Bạn Cô Dâu</option>
+            <option>Bạn Chú Rể</option>
+            <option>Người thân</option>
+        </select>
+
+        <select>
+            <option>Tôi đến 1 mình</option>
+            <option>Đi cùng 1 người</option>
+            <option>Đi cùng 2 người</option>
+            <option>Đi cùng 3 người</option>
+            <option>Đi cùng 4 người</option>
+        </select>
+
+        <textarea placeholder="Gửi lời chúc mừng tới cô dâu chú rể"></textarea>
+
+        <button>Xác nhận</button>
+    </div>
+</body>
+<script>
+    const formElements = document.querySelectorAll("input, select, textarea");
+    const button = document.querySelector("button");
+
+    button.addEventListener("click", async () => {
+        const name = formElements[0].value.trim();
+        const phone = formElements[1].value.trim();
+        const attend = document.querySelector('input[name="thamdu"]:checked')?.nextSibling.nodeValue.trim() || "";
+        const relation = formElements[4].value;
+        const guests = formElements[5].value;
+        const message = formElements[6].value.trim();
+
+        if (!name || !phone || !attend) {
+            alert("Vui lòng nhập đầy đủ họ tên, số điện thoại và xác nhận tham dự.");
+            return;
+        }
+
+        const data = {
+            name,
+            phone,
+            attend,
+            relation,
+            guests,
+            message
+        };
+
+        // Hiển thị đang xử lý
+        button.disabled = true;
+        const originalText = button.innerText;
+        button.innerText = "Đang xác nhận...";
+
+        try {
+            await fetch("https://script.google.com/macros/s/AKfycbzaaVyhVc4WEfCZMhG6BJCLOIx9qdy88oFDVlwF1e2wrnjTYxHhCPVLjhnWp7_x3y_Ftw/exec", {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "application/json" },
+            });
+
+            alert("Cảm ơn bạn đã xác nhận! ❤️");
+            formElements.forEach(e => {
+                if (e.type === "radio") e.checked = false;
+                else e.value = "";
+            });
+            setTimeout(() => {
+                window.location.href = "index.html"; // ← trang chính
+            }, 1500);
+        } catch (err) {
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+            console.error(err);
+        } finally {
+            // Khôi phục lại nút
+            button.disabled = false;
+            button.innerText = originalText;
+        }
+    });
+</script>
+
+</html>
