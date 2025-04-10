@@ -92,7 +92,8 @@
             }
         }
 
-        .radio-group label {
+        .radio-group .label-group {
+            flex: 1;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -129,8 +130,8 @@
         <input type="tel" placeholder="Số điện thoại" required />
 
         <div class="radio-group">
-            <label><input type="radio" name="thamdu" /> Có, tôi sẽ đến</label>
-            <label><input type="radio" name="thamdu" /> Xin lỗi, tôi bận mất rồi</label>
+            <label class="label-group"><input type="radio" name="thamdu" /> Có, tôi chắc chắn sẽ đến</label>
+            <label class="label-group"><input type="radio" name="thamdu" /> Xin lỗi, tôi bận mất rồi</label>
         </div>
 
         <select>
@@ -197,7 +198,7 @@
                 else e.value = "";
             });
             setTimeout(() => {
-                window.location.href = "index.html"; // ← trang chính
+                window.location.href = "../"; // ← trang chính
             }, 1500);
         } catch (err) {
             alert("Có lỗi xảy ra. Vui lòng thử lại.");
