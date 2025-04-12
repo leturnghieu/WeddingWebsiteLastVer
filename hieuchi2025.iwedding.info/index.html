@@ -41,6 +41,20 @@
     <link href="https://fonts.googleapis.com/css?family=Great+Vibes&amp;display=swap" rel="stylesheet">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-K9L0ZFE1PJ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-K9L0ZFE1PJ');</script>
+    <style>
+        #toggleMusic {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            padding: 8px 12px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <script type="text/javascript">
     var photoGalleries = [];
@@ -964,6 +978,15 @@
         </ul>
     </div>
 
+    <!-- Audio element -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="../Music/Ido_911.mp3" type="audio/mpeg" />
+        Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
+
+    <!-- Nút tắt/mở nhạc -->
+    <button id="toggleMusic">🔇 Tắt nhạc</button>
+
     <script type="text/javascript">
         function sanitizeJsonString(jsonString) {
             return jsonString
@@ -1004,54 +1027,90 @@
         const canvas = document.getElementById("heart-canvas");
         const ctx = canvas.getContext("2d");
         let hearts = [];
-      
+
         function resizeCanvas() {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-      
+
         function drawHeart(x, y, size, color) {
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.scale(size, size);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(0, -3, -5, -5, -5, -10);
-          ctx.bezierCurveTo(-5, -15, 0, -18, 0, -20);
-          ctx.bezierCurveTo(0, -18, 5, -15, 5, -10);
-          ctx.bezierCurveTo(5, -5, 0, -3, 0, 0);
-          ctx.closePath();
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.restore();
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(size, size);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(0, -3, -5, -5, -5, -10);
+            ctx.bezierCurveTo(-5, -15, 0, -18, 0, -20);
+            ctx.bezierCurveTo(0, -18, 5, -15, 5, -10);
+            ctx.bezierCurveTo(5, -5, 0, -3, 0, 0);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.restore();
         }
-      
+
         function createHeart() {
-          const x = Math.random() * canvas.width;
-          const y = -20;
-          const size = Math.random() * 0.8 + 0.3;
-          const speed = Math.random() * 1.5 + 0.5;
-          const color = `rgba(255, ${100 + Math.random()*100}, ${150 + Math.random()*100}, ${Math.random() * 0.5 + 0.5})`;
-          hearts.push({ x, y, size, speed, color });
+            const x = Math.random() * canvas.width;
+            const y = -20;
+            const size = Math.random() * 0.8 + 0.3;
+            const speed = Math.random() * 1.5 + 0.5;
+            const color = `rgba(255, ${100 + Math.random() * 100}, ${150 + Math.random() * 100}, ${Math.random() * 0.5 + 0.5})`;
+            hearts.push({ x, y, size, speed, color });
         }
-      
+
         function update() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          hearts.forEach((h, i) => {
-            h.y += h.speed;
-            h.x += Math.sin(h.y / 20) * 0.5; // trái tim đung đưa nhẹ
-            drawHeart(h.x, h.y, h.size, h.color);
-          });
-          hearts = hearts.filter(h => h.y < canvas.height + 50);
-          requestAnimationFrame(update);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach((h, i) => {
+                h.y += h.speed;
+                h.x += Math.sin(h.y / 20) * 0.5; // trái tim đung đưa nhẹ
+                drawHeart(h.x, h.y, h.size, h.color);
+            });
+            hearts = hearts.filter(h => h.y < canvas.height + 50);
+            requestAnimationFrame(update);
         }
-      
+
         setInterval(createHeart, 200); // tốc độ tạo trái tim
         update();
-      </script>
-      
+    </script>
+
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const audio = document.getElementById("bgMusic");
+            const toggleBtn = document.getElementById("toggleMusic");
+
+            // Hàm bật nhạc khi người dùng tương tác
+            const startMusic = () => {
+                audio.muted = false;
+                audio.play().catch(err => console.warn("Không thể phát nhạc:", err));
+                document.removeEventListener("click", startMusic);
+                document.removeEventListener("keydown", startMusic);
+                document.removeEventListener("scroll", startMusic);
+                document.removeEventListener("touchstart", startMusic);
+                document.removeEventListener("wheel", startMusic);
+            };
+
+            // Lắng nghe tương tác đầu tiên
+            document.addEventListener("click", startMusic);
+            document.addEventListener("keydown", startMusic);
+            document.addEventListener("scroll", startMusic);
+            document.addEventListener("touchstart", startMusic);
+            document.addEventListener("wheel", startMusic);
+
+            // Xử lý nút tắt/bật nhạc
+            toggleBtn.addEventListener("click", () => {
+                if (audio.paused) {
+                    audio.play();
+                    toggleBtn.textContent = "🔇 Tắt nhạc";
+                } else {
+                    audio.pause();
+                    toggleBtn.textContent = "🔊 Bật nhạc";
+                }
+            });
+        });
+    </script>
 </body>
 
 <!-- Mirrored from hieuchi2025.iwedding.info/ by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 10 Apr 2025 05:52:07 GMT -->
